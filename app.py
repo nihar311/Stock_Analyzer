@@ -34,11 +34,66 @@ def index():
     return render_template("index.html", symbol=symbol, tv_symbol=tv_symbol)
 
 
+# ── Chart Data for Lightweight Charts (NSE / BSE real candles) ───
+@app.route("/api/chart-data/<symbol>")
+def chart_data(symbol: str):
+    try:
+        import yfinance as yf
+        sym = clean(symbol)
+        period = request.args.get("period", "1y")
+        interval = request.args.get("interval", "1d")
+
+        # Try NSE first, fallback to BSE
+        hist = yf.Ticker(f"{sym}.NS").history(period=period, interval=interval)
+        if hist is None or hist.empty:
+            hist = yf.Ticker(f"{sym}.BO").history(period=period, interval=interval)
+
+        if hist is None or hist.empty:
+            return jsonify({"error": f"No candlestick history found for {sym}"}), 404
+
+        candles = []
+        volume = []
+        for idx, row in hist.iterrows():
+            t_str = idx.strftime("%Y-%m-%d")
+            o = round(float(row["Open"]), 2)
+            h = round(float(row["High"]), 2)
+            l = round(float(row["Low"]), 2)
+            c = round(float(row["Close"]), 2)
+            v = int(row["Volume"])
+
+            candles.append({
+                "time": t_str,
+                "open": o,
+                "high": h,
+                "low": l,
+                "close": c
+            })
+
+            vol_color = "rgba(0, 230, 118, 0.45)" if c >= o else "rgba(255, 69, 96, 0.45)"
+            volume.append({
+                "time": t_str,
+                "value": v,
+                "color": vol_color
+            })
+
+        return jsonify({
+            "symbol": sym,
+            "period": period,
+            "candles": candles,
+            "volume": volume
+        })
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
 # ── AI Summary ───────────────────────────────────────────
 def get_snapshot(symbol: str) -> dict:
     try:
         import yfinance as yf
         hist = yf.Ticker(f"{symbol}.NS").history(period="5d", interval="1d")
+        if hist is None or hist.empty:
+            hist = yf.Ticker(f"{symbol}.BO").history(period="5d", interval="1d")
         if hist is None or hist.empty:
             return {}
         c, p = float(hist["Close"].iloc[-1]), float(hist["Close"].iloc[-2]) if len(hist) > 1 else float(hist["Close"].iloc[-1])

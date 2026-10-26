@@ -81,6 +81,36 @@ button{font-family:inherit;cursor:pointer}
 .tradingview-widget-container{height:100%;width:100%}
 .tradingview-widget-container__widget{height:100%;width:100%}
 
+/* Chart Controls & Legend */
+.chart-controls { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.period-btn {
+  background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+  color: var(--t2); border-radius: 6px; padding: 4px 10px; font-size: 0.75rem;
+  font-weight: 600; transition: all 0.15s;
+}
+.period-btn:hover { background: rgba(0, 200, 255, 0.1); color: var(--blue); }
+.period-btn.active { background: rgba(0, 200, 255, 0.18); border-color: var(--blue); color: var(--blue); }
+.tv-link-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(41, 98, 255, 0.15); border: 1px solid rgba(41, 98, 255, 0.4);
+  color: #2962ff; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem;
+  font-weight: 600; transition: all 0.15s; margin-left: 4px;
+}
+.tv-link-btn:hover { background: #2962ff; color: #fff; }
+
+.chart-legend {
+  display: flex; gap: 14px; font-size: 0.78rem; color: var(--t2);
+  padding: 4px 8px 8px; flex-wrap: wrap; border-bottom: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 8px;
+}
+.chart-legend b { color: var(--t1); font-weight: 600; }
+.chart-loading-overlay {
+  position: absolute; inset: 0; background: rgba(10, 11, 18, 0.85);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  color: var(--t2); font-size: 0.9rem; z-index: 10; border-radius: 8px;
+  backdrop-filter: blur(2px);
+}
+
 /* Rows */
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .row-7-3{grid-template-columns:2fr 1fr}

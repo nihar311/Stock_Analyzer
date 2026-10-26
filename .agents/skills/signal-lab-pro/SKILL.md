@@ -29,30 +29,15 @@ A stock analysis dashboard for Indian NSE stocks that shows:
 - **AI**: Google Gemini API (`google-genai` SDK)
 - **Data**: yfinance for price snapshots (AI summary only)
 
-## Critical Architecture Decision — TradingView Widgets
+## Critical Architecture Decision — Candlestick Charting vs TradingView Embeds
 
-> **The ONLY reliable way to load TradingView widgets with a dynamic symbol is
-> server-side rendering via Flask/Jinja2.**
-
-### Why dynamic JS injection fails
-TradingView embed widgets (`embed-widget-*.js`) read their config JSON via
-`document.currentScript.textContent`. When a `<script src="...">` tag is
-created dynamically via `document.createElement('script')`, the browser sets
-`document.currentScript = null` during execution in most environments.
-This causes TradingView to fall back to its default symbol (Apple / AAPL).
-
-### The working pattern (ALWAYS use this)
-```
-User types stock → form GET /?symbol=RELIANCE → Flask renders index.html
-with {{ tv_symbol }} = "NSE:RELIANCE" baked into every widget's static
-<script> tag → TradingView reads it perfectly.
-```
-
-Never try to:
-- `document.createElement('script')` for TradingView widgets
-- `iframe.srcdoc` with TradingView scripts
-- `new TradingView.widget()` from tv.js for Indian stocks
-- Set `script.innerHTML` or `script.text` after DOM creation
+> **KEY DISCOVERY**: TradingView's free embed chart (`embed-widget-advanced-chart.js`) **blocks all Indian stocks (NSE/BSE)** with the error:
+> *"Notification: This symbol is only available on TradingView."* and forces an automatic fallback to Apple Inc (AAPL).
+>
+> **THE FIX**:
+> 1. **Main Interactive Chart**: Built with TradingView's official, open-source **Lightweight Charts™** (`lightweight-charts.standalone.production.js`). The candle history is served directly by the Flask endpoint `/api/chart-data/<symbol>` via `yfinance` (`.NS` / `.BO`). It supports periods (1M, 3M, 6M, 1Y), hover OHLC legend, and responsive auto-resize.
+> 2. **External Link**: An "Open in TradingView" button is provided to open `https://in.tradingview.com/chart/?symbol=NSE:<SYMBOL>` in a new tab if users want drawing tools.
+> 3. **Other Widgets**: TradingView's **Technical Analysis Gauge**, **Timeline News**, **Company Profile**, and **Market Screener** DO work for Indian stocks and are rendered via Jinja2 server-side embedding.
 
 ## File Structure
 ```
