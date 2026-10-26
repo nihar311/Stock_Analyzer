@@ -26,9 +26,9 @@ A stock analysis dashboard for Indian NSE stocks that shows:
 ## Tech Stack
 - **Backend**: Python 3, Flask
 - **Frontend**: Plain HTML/CSS/JS (no React/Vue)
-- **Charts**: TradingView Free Embed Widgets
-- **AI**: Google Gemini API (`google-genai` SDK)
-- **Data**: yfinance for price snapshots (AI summary only)
+- **Charts**: TradingView Lightweight Charts + TradingView Embed Widgets
+- **AI Engine**: `modules/ai_engine.py` (Dual LLM: Gemini Primary + Grok Fallback)
+- **Data**: yfinance for price snapshots & candlestick history
 
 ## Development Principles & Golden Rule
 
@@ -55,8 +55,11 @@ e:\Stock Purchase & sell Analysis\
 │   └── skills\
 │       └── signal-lab-pro\
 │           └── SKILL.md          ← this file
-├── .env                          ← GEMINI_API_KEY=...
+├── .env                          ← GEMINI_API_KEY=..., GROK_API_KEY=...
 ├── app.py                        ← Flask server (minimal)
+├── modules\
+│   ├── __init__.py
+│   └── ai_engine.py              ← Dual provider (Gemini + Grok fallback)
 ├── requirements.txt
 ├── watchlists\
 │   ├── nifty50.json
@@ -68,7 +71,7 @@ e:\Stock Purchase & sell Analysis\
     ├── css\
     │   └── style.css
     └── js\
-        └── app.js                ← only handles AI fetch + scanner
+        └── app.js                ← lightweight chart & AI fetch
 ```
 
 ## Key API Endpoints

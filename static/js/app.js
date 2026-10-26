@@ -214,6 +214,18 @@ async function loadAI(symbol) {
 
         const snap = data.snapshot || {};
         const text = data.summary || 'No summary returned.';
+        const provider = data.provider || 'AI';
+
+        // Update provider badge in card header
+        const badgeEl = document.getElementById('ai-provider-badge');
+        if (badgeEl) {
+            badgeEl.textContent = provider;
+            if (data.fallback_triggered) {
+                badgeEl.style.background = 'linear-gradient(135deg, #ff9100, #ff3d00)';
+            } else {
+                badgeEl.style.background = 'linear-gradient(135deg, #a000ff, #5500cc)';
+            }
+        }
 
         // Detect verdict
         const match = text.match(/\b(STRONG BUY|BUY|HOLD|WAIT|SELL|STRONG SELL|AVOID)\b/i);

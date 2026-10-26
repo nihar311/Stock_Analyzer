@@ -7,6 +7,7 @@ Open: http://localhost:5000/?symbol=RELIANCE
 
 import os, re, json, traceback
 from flask import Flask, render_template, jsonify, request
+from modules.ai_engine import get_ai_conclusion
 
 try:
     from dotenv import load_dotenv
@@ -110,18 +111,6 @@ def get_snapshot(symbol: str) -> dict:
         return {}
 
 
-def gemini(prompt: str) -> str:
-    if not GEMINI_API_KEY:
-        return "Add GEMINI_API_KEY to your .env file to enable AI analysis."
-    try:
-        from google import genai
-        r = genai.Client(api_key=GEMINI_API_KEY).models.generate_content(
-            model="gemini-2.0-flash", contents=prompt)
-        return r.text.strip()
-    except Exception as e:
-        return f"AI temporarily unavailable: {e}"
-
-
 @app.route("/api/ai-summary/<symbol>")
 def ai_summary(symbol: str):
     try:
@@ -131,19 +120,14 @@ def ai_summary(symbol: str):
         pl   = (f"Price ₹{snap['price']} ({snap['change_pct']:+.2f}% today, "
                 f"volume {snap['vol_ratio']}x avg)") if snap else "Price unavailable."
 
-        text = gemini(f"""You are a professional Indian stock market analyst.
-Stock: {sym} | Timeframe: {tf}
-{pl}
-
-In exactly 4 sentences:
-1. Current technical picture
-2. Key support / resistance level to watch
-3. Main risk right now
-4. Final verdict — BUY, HOLD, WAIT, or SELL
-
-Be direct. No disclaimers. End with the verdict word in capitals.""")
-
-        return jsonify({"summary": text, "snapshot": snap})
+        res = get_ai_conclusion(sym, pl, tf)
+        return jsonify({
+            "summary": res.get("summary", ""),
+            "provider": res.get("provider", "Gemini"),
+            "model": res.get("model", ""),
+            "fallback_triggered": res.get("fallback_triggered", False),
+            "snapshot": snap
+        })
     except Exception:
         traceback.print_exc()
         return jsonify({"error": "Server error"}), 500
