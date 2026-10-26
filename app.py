@@ -5,7 +5,7 @@ Run:  python app.py
 Open: http://localhost:5000/?symbol=RELIANCE
 """
 
-import os, re, json, traceback
+import os, re, json, traceback, math
 from flask import Flask, render_template, jsonify, request
 from modules.ai_engine import get_ai_conclusion
 
@@ -17,6 +17,17 @@ except ImportError:
 
 app = Flask(__name__)
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+
+
+def safe_float(val, default=0.0):
+    """Ensure a float value is JSON-safe (no NaN or inf)."""
+    try:
+        f = float(val)
+        if math.isnan(f) or math.isinf(f):
+            return default
+        return f
+    except (TypeError, ValueError):
+        return default
 
 
 def clean(raw: str) -> str:
@@ -54,13 +65,14 @@ def chart_data(symbol: str):
 
         candles = []
         volume = []
+        hist = hist.dropna(subset=["Open", "High", "Low", "Close"])
         for idx, row in hist.iterrows():
             t_str = idx.strftime("%Y-%m-%d")
-            o = round(float(row["Open"]), 2)
-            h = round(float(row["High"]), 2)
-            l = round(float(row["Low"]), 2)
-            c = round(float(row["Close"]), 2)
-            v = int(row["Volume"])
+            o = round(safe_float(row["Open"]), 2)
+            h = round(safe_float(row["High"]), 2)
+            l = round(safe_float(row["Low"]), 2)
+            c = round(safe_float(row["Close"]), 2)
+            v = int(safe_float(row["Volume"], default=0))
 
             candles.append({
                 "time": t_str,
@@ -97,14 +109,28 @@ def get_snapshot(symbol: str) -> dict:
             hist = yf.Ticker(f"{symbol}.BO").history(period="5d", interval="1d")
         if hist is None or hist.empty:
             return {}
-        c, p = float(hist["Close"].iloc[-1]), float(hist["Close"].iloc[-2]) if len(hist) > 1 else float(hist["Close"].iloc[-1])
-        v, av = int(hist["Volume"].iloc[-1]), int(hist["Volume"].mean())
+
+        hist = hist.dropna(subset=["Close"])
+        if hist.empty:
+            return {}
+
+        c = safe_float(hist["Close"].iloc[-1])
+        p = safe_float(hist["Close"].iloc[-2]) if len(hist) > 1 else c
+        chg_pct = round(((c - p) / p * 100), 2) if p > 0 else 0.0
+
+        v = int(safe_float(hist["Volume"].iloc[-1], default=0))
+        mean_vol = safe_float(hist["Volume"].mean(), default=1.0)
+        vol_ratio = round(v / mean_vol, 2) if mean_vol > 0 else 1.0
+
+        wh = safe_float(hist["High"].max(), default=c)
+        wl = safe_float(hist["Low"].min(), default=c)
+
         return {
-            "price":      round(c, 2),
-            "change_pct": round((c - p) / p * 100, 2) if p else 0,
-            "vol_ratio":  round(v / av, 2) if av else 1,
-            "week_high":  round(float(hist["High"].max()), 2),
-            "week_low":   round(float(hist["Low"].min()), 2),
+            "price":      round(safe_float(c), 2),
+            "change_pct": round(safe_float(chg_pct), 2),
+            "vol_ratio":  round(safe_float(vol_ratio, default=1.0), 2),
+            "week_high":  round(safe_float(wh), 2),
+            "week_low":   round(safe_float(wl), 2),
         }
     except Exception as e:
         print(f"[snapshot] {e}")

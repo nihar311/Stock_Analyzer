@@ -241,9 +241,9 @@ async function loadAI(symbol) {
                 <p class="ai-text">${text.replace(/\n/g, '<br>')}</p>
                 ${snap.price ? `
                 <div class="snap">
-                    <div class="snap-item"><span class="snap-l">Price</span><span class="snap-v">₹${snap.price.toLocaleString('en-IN')}</span></div>
-                    <div class="snap-item"><span class="snap-l">Today</span><span class="snap-v" style="color:${snap.change_pct >= 0 ? 'var(--green)' : 'var(--red)'}">${snap.change_pct >= 0 ? '+' : ''}${snap.change_pct}%</span></div>
-                    <div class="snap-item"><span class="snap-l">Volume</span><span class="snap-v">${snap.vol_ratio}x avg</span></div>
+                    <div class="snap-item"><span class="snap-l">Price</span><span class="snap-v">₹${(snap.price || 0).toLocaleString('en-IN')}</span></div>
+                    <div class="snap-item"><span class="snap-l">Today</span><span class="snap-v" style="color:${(snap.change_pct ?? 0) >= 0 ? 'var(--green)' : 'var(--red)'}">${(snap.change_pct ?? 0) >= 0 ? '+' : ''}${snap.change_pct ?? 0}%</span></div>
+                    <div class="snap-item"><span class="snap-l">Volume</span><span class="snap-v">${snap.vol_ratio ?? 1}x avg</span></div>
                     <div class="snap-item"><span class="snap-l">5D High</span><span class="snap-v">₹${snap.week_high ? snap.week_high.toLocaleString('en-IN') : '—'}</span></div>
                     <div class="snap-item"><span class="snap-l">5D Low</span><span class="snap-v">₹${snap.week_low ? snap.week_low.toLocaleString('en-IN') : '—'}</span></div>
                 </div>` : ''}
