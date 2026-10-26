@@ -19,7 +19,8 @@ A stock analysis dashboard for Indian NSE stocks that shows:
 `e:\Stock Purchase & sell Analysis\`
 
 ## GitHub Repository
-- URL: (update after first push)
+- URL: https://github.com/nihar311/Stock_Analyzer
+- Remote: origin
 - Branch: main
 
 ## Tech Stack
