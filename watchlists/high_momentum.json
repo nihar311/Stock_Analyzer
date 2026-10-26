@@ -1,0 +1,29 @@
+{
+    "name": "High Momentum & Breakout",
+    "description": "High beta, trending, and volatile stocks (Adani, PSUs, Railways, Defense, Metals) that work best with the Confluence Engine.",
+    "stocks": [
+        {"symbol": "ADANIENT.NS", "name": "Adani Enterprises"},
+        {"symbol": "ADANIPORTS.NS", "name": "Adani Ports"},
+        {"symbol": "ADANIGREEN.NS", "name": "Adani Green Energy"},
+        {"symbol": "ADANIPOWER.NS", "name": "Adani Power"},
+        {"symbol": "AWL.NS", "name": "Adani Wilmar"},
+        {"symbol": "ATGL.NS", "name": "Adani Total Gas"},
+        {"symbol": "IRFC.NS", "name": "Indian Railway Finance Corp"},
+        {"symbol": "RVNL.NS", "name": "Rail Vikas Nigam"},
+        {"symbol": "MAZDOCK.NS", "name": "Mazagon Dock"},
+        {"symbol": "HAL.NS", "name": "Hindustan Aeronautics"},
+        {"symbol": "BDL.NS", "name": "Bharat Dynamics"},
+        {"symbol": "BHEL.NS", "name": "Bharat Heavy Electricals"},
+        {"symbol": "PFC.NS", "name": "Power Finance Corp"},
+        {"symbol": "RECLTD.NS", "name": "REC Ltd"},
+        {"symbol": "TATASTEEL.NS", "name": "Tata Steel"},
+        {"symbol": "JSWSTEEL.NS", "name": "JSW Steel"},
+        {"symbol": "VEDL.NS", "name": "Vedanta"},
+        {"symbol": "HINDALCO.NS", "name": "Hindalco"},
+        {"symbol": "TRENT.NS", "name": "Trent Ltd"},
+        {"symbol": "ZOMATO.NS", "name": "Zomato"},
+        {"symbol": "SUZLON.NS", "name": "Suzlon Energy"},
+        {"symbol": "BSE.NS", "name": "BSE Ltd"},
+        {"symbol": "CDSL.NS", "name": "Central Depository Services"}
+    ]
+}

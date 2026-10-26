@@ -1,0 +1,26 @@
+{
+    "name": "Nifty Next 50",
+    "description": "The 50 companies from NIFTY 100 after excluding the NIFTY 50 companies.",
+    "stocks": [
+        {"symbol": "BEL.NS", "name": "Bharat Electronics"},
+        {"symbol": "HAL.NS", "name": "Hindustan Aeronautics"},
+        {"symbol": "TRENT.NS", "name": "Trent Ltd"},
+        {"symbol": "ZOMATO.NS", "name": "Zomato"},
+        {"symbol": "TVSMOTOR.NS", "name": "TVS Motor"},
+        {"symbol": "CHOLAFIN.NS", "name": "Chola Investment"},
+        {"symbol": "PNB.NS", "name": "Punjab National Bank"},
+        {"symbol": "VEDL.NS", "name": "Vedanta"},
+        {"symbol": "SHREECEM.NS", "name": "Shree Cement"},
+        {"symbol": "PIDILITIND.NS", "name": "Pidilite Industries"},
+        {"symbol": "SIEMENS.NS", "name": "Siemens"},
+        {"symbol": "GODREJCP.NS", "name": "Godrej Consumer"},
+        {"symbol": "HAVELLS.NS", "name": "Havells India"},
+        {"symbol": "SRF.NS", "name": "SRF Ltd"},
+        {"symbol": "INDIGO.NS", "name": "InterGlobe Aviation"},
+        {"symbol": "AMBUJACEM.NS", "name": "Ambuja Cements"},
+        {"symbol": "ABB.NS", "name": "ABB India"},
+        {"symbol": "BOSCHLTD.NS", "name": "Bosch"},
+        {"symbol": "GAIL.NS", "name": "GAIL India"},
+        {"symbol": "DMART.NS", "name": "Avenue Supermarts"}
+    ]
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ symbol }} | Signal Lab Pro</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <i class="fas fa-chart-line"></i>
+      <div><b>Signal Lab</b><span>PRO</span></div>
+    </div>
+
+    <p class="sec-label">Quick Picks</p>
+    {% set watchlist = ['RELIANCE','TCS','HDFCBANK','INFY','ICICIBANK',
+                        'SBIN','ITC','LT','WIPRO','AXISBANK','BAJFINANCE','MARUTI'] %}
+    {% for s in watchlist %}
+    <a href="/?symbol={{ s }}" class="pick {% if s == symbol %}active{% endif %}">{{ s }}</a>
+    {% endfor %}
+
+    <div class="sidebar-footer"><span class="dot-green"></span> NSE Live</div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <form action="/" method="GET" class="search-form">
+        <i class="fas fa-search"></i>
+        <input name="symbol" value="{{ symbol }}" placeholder="NSE symbol… e.g. TATAMOTORS" autocomplete="off" autofocus>
+        <button type="submit"><i class="fas fa-bolt"></i> Analyze</button>
+      </form>
+      <div class="badge"><span class="dot-green"></span>{{ symbol }} · NSE</div>
+    </header>
+
+    <!-- Scrollable content -->
+    <div class="content">
+
+      <!-- ① AI DECISION CARD -->
+      <div class="card ai-card">
+        <div class="card-head">
+          <h3><i class="fas fa-robot"></i> AI Decision <span class="gem-badge">Gemini</span></h3>
+          <button onclick="loadAI()" class="icon-btn" title="Refresh"><i class="fas fa-rotate-right"></i></button>
+        </div>
+        <div id="ai-box" class="ai-loading">
+          <div class="spinner"></div> Analysing <strong>{{ symbol }}</strong> with Gemini AI…
+        </div>
+      </div>
+
+      <!-- ② CHART + TA GAUGE (server-rendered — symbol baked by Jinja2) -->
+      <div class="row-2 row-7-3">
+
+        <!-- Chart -->
+        <div class="card">
+          <div class="card-head">
+            <h3><i class="fas fa-chart-candlestick"></i> Chart · {{ symbol }}</h3>
+          </div>
+          <!-- ★ Symbol is a static Jinja2 string in this <script> tag ★ -->
+          <div class="tv-wrap h480">
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+              <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+              {"autosize":true,"symbol":"{{ tv_symbol }}","interval":"D","timezone":"Asia/Kolkata","theme":"dark","style":"1","locale":"en","backgroundColor":"#0a0b12","enable_publishing":false,"allow_symbol_change":false,"save_image":false,"withdateranges":true,"hide_top_toolbar":false,"calendar":false,"support_host":"https://www.tradingview.com","studies":["MAExp@tv-basicstudies","BB@tv-basicstudies","VWAP@tv-basicstudies","RSI@tv-basicstudies","MACD@tv-basicstudies","Volume@tv-basicstudies"]}
+              </script>
+            </div>
+          </div>
+        </div>
+
+        <!-- TA Gauge -->
+        <div class="card">
+          <div class="card-head">
+            <h3><i class="fas fa-gauge-high"></i> Signal</h3>
+          </div>
+          <div class="tv-wrap h480">
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+              <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+              {"interval":"1D","width":"100%","height":"100%","isTransparent":true,"symbol":"{{ tv_symbol }}","showIntervalTabs":true,"displayMode":"single","locale":"en","colorTheme":"dark"}
+              </script>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /row-2 -->
+
+      <!-- ③ MULTI-TIMEFRAME -->
+      <div class="card">
+        <div class="card-head">
+          <h3><i class="fas fa-layer-group"></i> Multi-Timeframe Agreement · {{ symbol }}</h3>
+          <span class="sub">All 4 green = strongest signal</span>
+        </div>
+        <div class="mtf-row">
+          {% for tf, lbl in [('15','15 min'),('60','1 Hour'),('1D','1 Day'),('1W','1 Week')] %}
+          <div class="mtf-cell">
+            <p class="mtf-lbl">{{ lbl }}</p>
+            <div class="tv-wrap h220">
+              <div class="tradingview-widget-container" style="height:100%;width:100%">
+                <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+                {"interval":"{{ tf }}","width":"100%","height":"100%","isTransparent":true,"symbol":"{{ tv_symbol }}","showIntervalTabs":false,"displayMode":"compact","locale":"en","colorTheme":"dark"}
+                </script>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- ④ NEWS + PROFILE -->
+      <div class="row-2">
+        <div class="card">
+          <div class="card-head"><h3><i class="fas fa-newspaper"></i> News · {{ symbol }}</h3></div>
+          <div class="tv-wrap h360">
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+              <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+              {"feedMode":"symbol","symbol":"{{ tv_symbol }}","colorTheme":"dark","isTransparent":true,"displayMode":"regular","width":"100%","height":"100%","locale":"en"}
+              </script>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3><i class="fas fa-building-columns"></i> Company Profile</h3></div>
+          <div class="tv-wrap h360">
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+              <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-profile.js" async>
+              {"width":"100%","height":"100%","colorTheme":"dark","isTransparent":true,"symbol":"{{ tv_symbol }}","locale":"en"}
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⑤ NIFTY 50 SCREENER -->
+      <div class="card">
+        <div class="card-head"><h3><i class="fas fa-table-list"></i> Nifty 50 Live Screener</h3></div>
+        <div class="tv-wrap h560">
+          <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+            {"width":"100%","height":560,"defaultColumn":"overview","defaultScreen":"most_capitalized","market":"india","showToolbar":true,"colorTheme":"dark","locale":"en","isTransparent":true}
+            </script>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⑥ QUICK LINKS (Nifty 50 pills) -->
+      <div class="card">
+        <div class="card-head"><h3><i class="fas fa-fire"></i> Nifty 50 — Quick Analyse</h3></div>
+        <div id="pills" class="pills-wrap">Loading…</div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script src="/static/js/app.js"></script>
+<script>
+  // Pass Jinja2 values to JS
+  const CURRENT_SYMBOL = "{{ symbol }}";
+</script>
+</body>
+</html>
