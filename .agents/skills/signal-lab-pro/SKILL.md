@@ -29,6 +29,14 @@ A stock analysis dashboard for Indian NSE stocks that shows:
 - **AI**: Google Gemini API (`google-genai` SDK)
 - **Data**: yfinance for price snapshots (AI summary only)
 
+## Development Principles & Golden Rule
+
+> [!IMPORTANT]
+> **MODULAR EXTENSION ONLY — NEVER REWRITE THE CORE CODEBASE:**
+> 1. **Preserve the baseline**: The current core architecture (`app.py`, `templates/index.html`, `static/js/app.js`, `static/css/style.css`) is stable and working. Do NOT overwrite or rebuild them from scratch when new modifications are requested.
+> 2. **Modular additions**: Any future modifications, new technical indicators, backtesting logic, live alerts, or extra features must be created in **new, separate modules** (e.g., in a `modules/` or `plugins/` directory) and imported as plug-and-play components.
+> 3. **Non-breaking enhancements**: Existing routes and UI components must remain intact; new capabilities should extend via dedicated endpoints or additive UI panels.
+
 ## Critical Architecture Decision — Candlestick Charting vs TradingView Embeds
 
 > **KEY DISCOVERY**: TradingView's free embed chart (`embed-widget-advanced-chart.js`) **blocks all Indian stocks (NSE/BSE)** with the error:
