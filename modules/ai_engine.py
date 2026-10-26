@@ -23,7 +23,7 @@ GEMINI_MODELS = ["gemini-flash-latest", "gemini-3.8-flash"]
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 
 # ── Fallback 1: Groq (Free tier at console.groq.com) ─────────────────────────
-GROQ_MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+GROQ_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # ── Fallback 2: xAI Grok (console.x.ai) ──────────────────────────────────────
@@ -105,19 +105,21 @@ def call_groq(prompt: str, api_key: str) -> dict:
                 {"role": "user", "content": prompt},
             ],
             "temperature": 0.3,
-            "max_tokens": 400,
+            "max_tokens": 600,
         }
 
         try:
-            resp = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=6)
+            resp = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=8)
             if resp.status_code == 200:
                 data = resp.json()
-                content = data["choices"][0]["message"]["content"].strip()
-                return {
-                    "text": content,
-                    "provider": "Groq (Free Fallback)",
-                    "model": model,
-                }
+                msg = data["choices"][0]["message"]
+                content = (msg.get("content") or msg.get("reasoning") or "").strip()
+                if content:
+                    return {
+                        "text": content,
+                        "provider": "Groq (Free Fallback)",
+                        "model": model,
+                    }
             else:
                 last_error = RuntimeError(f"Groq API {resp.status_code}: {resp.text[:150]}")
                 logger.warning(f"[AI Engine] Groq {model} returned HTTP {resp.status_code}")
